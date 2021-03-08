@@ -13,14 +13,14 @@ class FollowingCustomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Following
         fields = 'following'
-        read_only_fields = ('following')
+   
 
 class FollowerCustomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Following
         fields = 'follower'
-        read_only_fields = ('follower')
+  
 
 class LikeSerializer(serializers.ModelSerializer):
 
@@ -41,7 +41,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['author','photo','photo_thumbnail','location','caption','number_of_likes']
+        fields = ['author','photo','location','caption','number_of_likes']
         read_only_fields = ('created_on','last_modified','number_of_likes')
 
     def get_number_of_likes(self, obj):

@@ -122,9 +122,9 @@ class PostViewSet(viewsets.ModelViewSet):
 #likes can be searched using 'like_post=','like_author='
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
-    filter_backends = (DjangoFilterBackend)
+    filter_backends = (DjangoFilterBackend,)
     filter_fields =('like_post','like_author')
-    # filterset_fields =[]
+    # filterset_fields =['like_post','like_author']
     # ordering =('-created_on',)
     # search_fields =('caption',)
     serializer_class = LikeSerializer
@@ -155,9 +155,9 @@ class LikeViewSet(viewsets.ModelViewSet):
 
 class FollowingViewSet(viewsets.ModelViewSet):
     serializer_class = FollowingSerializer
-    filter_backends = (DjangoFilterBackend)
+    filter_backends = (DjangoFilterBackend,)
     filter_fields =('follower','following')
-    queryset = Following.objects.all().order_by('-created_on')  
+    queryset = Following.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(follower=self.request.user)

@@ -13,11 +13,11 @@ User = get_user_model()
 class Post(AbstractBaseModel):
     author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='user_posts')
     photo = models.ImageField(upload_to='photo/%y/%m/%d', null =False) 
-    photo_thumbnail = ImageSpecField(source='photo',
-                                      processors=[ResizeToFill(150, 150)],
-                                      format='JPEG',
-                                      options={'quality': 60}
-                                      )
+    # photo_thumbnail = ImageSpecField(source='photo',
+    #                                   processors=[ResizeToFill(150, 150)],
+    #                                   format='JPEG',
+    #                                   options={'quality': 60}
+    #                                   )
     location  =  models.TextField(_('Post location '), max_length=30, blank=True,null=True)   
     caption  = models.TextField(_('Post caption '), max_length=430, blank=True,null=True)   
 
