@@ -12,14 +12,14 @@ class FollowingCustomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Following
-        fields = 'following'
+        fields = ['following']
    
 
 class FollowerCustomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Following
-        fields = 'follower'
+        fields = ['follower']
   
 
 class LikeSerializer(serializers.ModelSerializer):
