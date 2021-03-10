@@ -13,8 +13,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
    
     class Meta:
         model = get_user_model()
-        fields = ['id','first_name','last_name','email','password','is_staff','is_superuser','bio','avatar','username',
-        'is_active','last_login','date_joined','number_of_posts','number_of_following','number_of_followers']
+        fields = ['id','first_name','last_name','email','password','is_staff','is_superuser','bio','avatar','username','is_active',
+        'last_login','date_joined','number_of_posts','number_of_following','number_of_followers']
         read_only_fields = ('id','is_staff','is_superuser','is_active','last_login','date_joined','number_of_posts','number_of_following','number_of_followers')
         extra_kwargs = {
             'password': {'write_only': True}
@@ -33,10 +33,35 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user = get_user_model().objects.create_user(**validated_data)
         return user
 
+    
+
     def update(self, instance, validated_data):
         if 'password' in validated_data:
             password = validated_data.pop('password')
             instance.set_password(password)
         return super(CustomUserSerializer, self).update(instance, validated_data)
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    class Meta:
+        model = get_user_model()
+
+    def update(self, instance, validated_data):
+        password_valid = instance.check_password(validated_data.get('old_password'))
+        if not password_valid:
+            error = {'error': "Wrong password"}
+            raise serializers.ValidationError(
+                error
+            )
+
+        instance.set_password(validated_data.get('new_password'))
+        instance.save()
+
+        return instance
 
 

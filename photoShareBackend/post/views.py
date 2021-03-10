@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets,permissions
+from rest_framework import viewsets,permissions,exceptions,status
 from rest_framework.exceptions import ValidationError
 from .models import *
 from .serializers import *
@@ -67,8 +67,8 @@ class ReadOnly(permissions.BasePermission):
 #viewset for comment related function use search query to get specfic comment related to 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer  
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
-    filter_fields = ('comment_post','comment_author')
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields = ('comment_post','comment_author',)
     # filterset_fields =[]
     # ordering =('-created_on',)
     search_fields = ('comment_text',)
@@ -88,8 +88,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 #viewset for post related function to acess list of post of user by 
 class PostViewSet(viewsets.ModelViewSet):  
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
-    filter_fields =('author','location')
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_fields =('author','location',)
     # filterset_fields =[]
     # ordering =('-created_on',)
     search_fields =('caption',)
@@ -123,7 +123,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields =('like_post','like_author')
+    filter_fields =('like_post','like_author',)
     # filterset_fields =['like_post','like_author']
     # ordering =('-created_on',)
     # search_fields =('caption',)
@@ -156,11 +156,15 @@ class LikeViewSet(viewsets.ModelViewSet):
 class FollowingViewSet(viewsets.ModelViewSet):
     serializer_class = FollowingSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields =('follower','following')
+    filter_fields =('follower','following',)
     queryset = Following.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(follower=self.request.user)
+        if not self.request.data.get('follower','') == self.request.data.get('following',''):
+            serializer.save(follower=self.request.user)
+        else:
+            raise(exceptions.ValidationError(detail={'error':'Cannot follow oneself'},code=status.HTTP_400_BAD_REQUEST))
+
     
     def get_permissions(self):
         if self.request.method == 'POST' or 'GET':
