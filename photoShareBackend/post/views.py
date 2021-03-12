@@ -19,40 +19,40 @@ class IsPostOwner(permissions.BasePermission):
     Custom permission to only allow owners of an object to edit it.
     """
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated()
+        return bool(request.user and request.user.is_authenticated())
 
     def has_object_permission(self, request, view, obj):
-        return obj.author == request.user 
+        return bool(obj.author == request.user)
 
 class IsCommentOwner(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
     """
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated()
+        return bool(request.user and request.user.is_authenticated())
 
     def has_object_permission(self, request, view, obj):
-        return obj.comment_author == request.user 
+        return bool(obj.comment_author == request.user)
 
 class IsLikeOwner(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
     """
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated()
+        return bool(request.user and request.user.is_authenticated())
 
     def has_object_permission(self, request, view, obj):
-        return obj.like_author == request.user
+        return bool(obj.like_author == request.user)
 
 class IsFollowingOwner(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
     """
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated()
+        return bool(request.user and request.user.is_authenticated())
 
     def has_object_permission(self, request, view, obj):
-        return obj.follower == request.user
+        return bool(obj.follower == request.user)
 
 
 #custom permission class for readonly
@@ -79,7 +79,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.IsAuthenticated,)
         elif self.request.method ==  'PATCH' or 'UPDATE':
             self.permission_classes = (IsCommentOwner,)
-        elif self.request.method == 'DELETE':
+        else:
             self.permission_classes = [IsCommentOwner|permissions.IsAdminUser]
         return super(CommentViewSet, self).get_permissions()
 
@@ -101,7 +101,7 @@ class PostViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.IsAuthenticated,)
         elif self.request.method ==  'PATCH' or 'PUT':
             self.permission_classes = (IsPostOwner,)
-        elif self.request.method == 'DELETE':
+        else:
             self.permission_classes = [IsPostOwner|permissions.IsAdminUser]
         return super(PostViewSet, self).get_permissions()
 
@@ -132,10 +132,10 @@ class LikeViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method == 'POST' or 'GET':
-            self.permission_classes = (permissions.IsAuthenticated,)
+            self.permission_classes = [permissions.IsAuthenticated,]
         elif self.request.method ==  'PATCH' or 'PUT' or 'DELETE' :
-            self.permission_classes = (IsLikeOwner,)
-        return super(LikeViewSet, self).get_permissions()
+            self.permission_classes = [IsLikeOwner,]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(like_author=self.request.user)
@@ -168,10 +168,10 @@ class FollowingViewSet(viewsets.ModelViewSet):
     
     def get_permissions(self):
         if self.request.method == 'POST' or 'GET':
-            self.permission_classes = (permissions.IsAuthenticated,)
-        elif self.request.method ==  'PATCH' or 'PUT' or 'DELETE':
-            self.permission_classes = (IsFollowingOwner,)
-        return super(FollowingViewSet, self).get_permissions()
+            self.permission_classes = [permissions.IsAuthenticated,]
+        else:
+            self.permission_classes = [IsFollowingOwner,]
+        return super().get_permissions()
 
  
  # get list of following 

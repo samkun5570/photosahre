@@ -17,11 +17,11 @@ class CustomUser(AbstractUser):
     # gender = models.CharField( _('Gender'), max_length=10, choices=GENDER_CHOICES.choices, null=True)
     bio = models.TextField(blank=True)
     avatar = models.ImageField(upload_to='avatars/%y/%m/%d', default='avatar.png')
-    # avatar_thumbnail = ImageSpecField(source='avatar',
-    #                                   processors=[ResizeToFill(75, 75)],
-    #                                   format='JPEG',
-    #                                   options={'quality': 60}
-    #                                   )
+    avatar_thumbnail = ImageSpecField(source='avatar',
+                                      processors=[ResizeToFill(75, 75)],
+                                      format='JPEG',
+                                      options={'quality': 60}
+                                      )
 
     def __str__(self):
         return self.username

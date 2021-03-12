@@ -10,12 +10,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
     number_of_posts = serializers.SerializerMethodField()
     number_of_following = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
+    thumbnail = serializers.ImageField(source='avatar_thumbnail',read_only=True)
    
     class Meta:
         model = get_user_model()
-        fields = ['id','first_name','last_name','email','password','is_staff','is_superuser','bio','avatar','username','is_active',
+        fields = ['id','first_name','last_name','email','password','is_staff','is_superuser','bio','avatar','username','is_active','thumbnail',
         'last_login','date_joined','number_of_posts','number_of_following','number_of_followers']
-        read_only_fields = ('id','is_staff','is_superuser','is_active','last_login','date_joined','number_of_posts','number_of_following','number_of_followers')
+        read_only_fields = ('id','is_staff','is_superuser','is_active','last_login','date_joined','number_of_posts','thumbnail','number_of_following','number_of_followers')
         extra_kwargs = {
             'password': {'write_only': True}
         }

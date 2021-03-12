@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     'corsheaders',
+    'rest_framework_swagger',#no longer maintained
+    # 'django.contrib.staticfiles',  # required for serving swagger ui's css/js files
+    # 'drf_yasg',
     'user',
     'post',
     'imagekit',
@@ -88,11 +91,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'photoShareBackend.wsgi.application'
+
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media Files (Images, PDF, CSV)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# doc files
+DOC_ROOT = os.path.join(BASE_DIR, 'doc')
 
 
 REST_FRAMEWORK = {
@@ -100,6 +108,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
     ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
         'user': '10000/day'
@@ -110,7 +119,7 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT' : "%m/%d/%Y %H:%M:%S",
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 40
+    'PAGE_SIZE': 40,
 
 }
 
@@ -118,7 +127,7 @@ AUTH_USER_MODEL = 'user.CustomUser'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    # 'common.models.CaseInsensetiveModelbackend'
+    # 'Base.models.CaseInsensetiveModelbackend'
 )
 
 REST_KNOX = {
@@ -153,15 +162,15 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': {
-    'ENGINE': 'django.db.backends.mysql',
-    'NAME': env('DEV_DTABASE_NAME'),
-    'USER': env('DEV_DTABASE_USER'),
-    'PASSWORD':env('DEV_DTABASE_PASS'),
-    'HOST': env('DEV_DTABASE_HOST'),
-    'PORT': env('DEV_DTABASE_PORT'),
-    'OPTIONS': { 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'" }
-}
-
+        'ENGINE': env('MYSQL_ENGINE'),
+        'NAME': env('MYSQL_DEV_DTABASE_NAME'),
+        'USER': env('MYSQL_DEV_DTABASE_USER'),
+        'PASSWORD':env('MYSQL_DEV_DTABASE_PASS'),
+        'HOST': env('MYSQL_DEV_DTABASE_HOST'),
+        'PORT': env('MYSQL_DEV_DTABASE_PORT'),
+        'OPTIONS': { 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'" }
+    }
+    
 }
 
 
@@ -201,4 +210,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+# SWAGGER_SETTINGS
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}
